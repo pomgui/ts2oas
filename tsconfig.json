@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+      "module": "CommonJS",
+      "target": "ES6",
+      "noImplicitAny": true,
+      "preserveConstEnums": true,
+      "outDir": "./dist",
+      "sourceMap": true,
+      "noEmitHelpers": true,
+      "importHelpers": true,
+      "experimentalDecorators": true,
+      "strict": true,
+      "declaration": true,
+      "removeComments": true
+  },
+  "include": [
+      "src/**/*.ts"
+, "bin/index.ts"  ],
+  "exclude": [
+      "node_modules",
+      "**/*.test.ts"
+  ]
+}
