@@ -8,7 +8,7 @@ import { Glob } from './Glob';
 const pkg = require(process.cwd() + '/package.json');
 
 let
-  outputFile: string = './spec.oas3.json',
+  outputFiles: string[] = [],
   inputFiles = new Set<string>();
 const
   template = {
@@ -44,7 +44,7 @@ function processArgs(): void {
     const opt = argv[i];
     switch (opt) {
       case '-d': inputFiles.add(argv[++i]); i++; break;
-      case '-o': outputFile = argv[++i]; i++; break;
+      case '-o': outputFiles.push(argv[++i]); i++; break;
       default:
         if (opt.startsWith('-'))
           usage(opt);
@@ -55,21 +55,27 @@ function processArgs(): void {
   removeOutputFromInput();
   if (inputFiles.size == 0)
     usage('No input files');
+  if (outputFiles.length == 0)
+    outputFiles.push('./spec.oas3.json');
 }
 
 function removeOutputFromInput() {
-  const output = path.resolve(outputFile);
-  if (inputFiles.has(output))
-    inputFiles.delete(output);
+  outputFiles.forEach(outputFile => {
+    const output = path.resolve(outputFile);
+    if (inputFiles.has(output))
+      inputFiles.delete(output);
+  })
 }
 
 function saveOAS(oas: any): void {
   let file: string;
-  if (isYaml(outputFile))
-    file = jsyaml.dump(oas);
-  else
-    file = JSON.stringify(oas);
-  fs.writeFileSync(outputFile, file, 'utf8');
+  outputFiles.forEach(outputFile => {
+    if (isYaml(outputFile))
+      file = jsyaml.dump(oas);
+    else
+      file = JSON.stringify(oas);
+    fs.writeFileSync(outputFile, file, 'utf8');
+  });
 }
 
 function loadFile(file: string): any {
@@ -109,10 +115,12 @@ function usage(option: string): void {
   console.log(`
   Option '${option}' unknown.
   Usage:
-    ts2oas [-d DEF] [-o OUTPUT] PARTIAL1 [PARTIAL2...]
+    ts2oas [-d DEF] [-o OUTPUT1 [-o OUTPUT2...]] PARTIAL1 [PARTIAL2...]
   Where:
     -d DEF    Uses a start definition (DEF) file
-    -o OUTPUT Defines the output of the final OAS3 spec (default ./spec.oas3.json)
+    -o OUTPUT Defines the outputs of the final OAS3 spec (default ./spec.oas3.json)
+              It can be defined various files, the extension determines the file type:
+              .yaml or .yml for Yaml files, otherwise it always will save JSON files.
     PARTIALn  OAS3 partial spec files (they need at leaast one root key, e.g. "paths")
               Every PARTIAL is a glob pattern (E.g. ./oas/**/*.ts)
   About the files:
