@@ -207,11 +207,15 @@ export class TypescriptToOAS {
             tags.forEach((tag: any) => {
               const tagName = tag.tagName.escapedText;
               let tagValue: any = tag.comment;
-              if (['minimum', 'maximum', 'multipleOf', 'exclusiveMaximum', 'exclusiveMinimum'].includes(tagName))
+              if (['minimum', 'maximum', 'multipleOf', 'exclusiveMaximum', 'exclusiveMinimum'].includes(tagName)) {
                 if (prop.type == 'integer')
                   tagValue = parseInt(tagValue);
                 else if (prop.type == 'number')
-                tagValue = parseFloat(tagValue);
+                  tagValue = parseFloat(tagValue);
+              }
+              else if ('additionalProperties' === tagName) {
+                tagValue = tagValue === 'true';
+              }
               prop[tagName] = tagValue;
               tagList.push(tagName);
             });
