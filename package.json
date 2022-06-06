@@ -1,6 +1,6 @@
 {
   "name": "@pomgui/ts2oas",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Converts typescript classes/interfaces/types into OAS3 spec",
   "scripts": {
     "test": "jest",
