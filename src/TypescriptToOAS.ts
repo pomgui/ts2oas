@@ -206,7 +206,7 @@ export class TypescriptToOAS {
           if (tags)
             tags.forEach((tag: any) => {
               const tagName = tag.tagName.escapedText;
-              let tagValue: any = tag.comment;
+              let tagValue: any = tag.comment.trim();
               if (['minimum', 'maximum', 'multipleOf', 'exclusiveMaximum', 'exclusiveMinimum'].includes(tagName)) {
                 if (prop.type == 'integer')
                   tagValue = parseInt(tagValue);
@@ -215,6 +215,12 @@ export class TypescriptToOAS {
               }
               else if ('additionalProperties' === tagName) {
                 tagValue = tagValue === 'true';
+              }
+              else if ('required' === tagName) {
+                if (tagValue.startsWith('['))
+                  tagValue = tagValue.replace(/^\[|\]$/g, '').split(',').map((s: string) => s.trim());
+                else
+                  tagValue = tagValue === 'true';
               }
               prop[tagName] = tagValue;
               tagList.push(tagName);
