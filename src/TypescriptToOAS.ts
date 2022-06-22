@@ -77,6 +77,8 @@ export class TypescriptToOAS {
           if (schema.properties[k].required) schema.required.push(k);
           delete schema.properties[k].required;
         });
+      if (schema.required.length === 0)
+        delete schema.required;
     }
     if (node.jsDoc) {
       const tagList = this._extractTags(schema, node.jsDoc);
