@@ -27,20 +27,24 @@ const PSEUDO_REFS: any = deepFreeze({
 });
 
 export class TypescriptToOAS {
-  /** schemas found */
+  /** found schemas */
   private _schemas: any = {};
-  private _code: string = '';
 
   getOAS(): any { return { components: { schemas: this._schemas } }; }
 
   /**
    * Converts all the exported interfaces, classes, and types into OAS schemas object.
-   * @param filename Typescript file name
-   * @param code Typescript code to be converted
+   * @param _filename Typescript file name
+   * @param _code     Typescript code to be converted
    */
-  convert(filename: string, code: string) {
-    this._code = code;
-    const node = ts.createSourceFile(filename, code, ts.ScriptTarget.Latest);
+  constructor(private _filename: string, private _code: string) { }
+
+  /**
+   * Executes the conversion
+   * @returns 
+   */
+  convert(): TypescriptToOAS {
+    const node = ts.createSourceFile(this._filename, this._code, ts.ScriptTarget.Latest);
     node.forEachChild(child => {
       switch (child.kind) {
         case SyntaxKind.InterfaceDeclaration:
@@ -195,8 +199,18 @@ export class TypescriptToOAS {
     const code = this._code;
     let p = code.lastIndexOf('\n', node.pos) + 1, e = code.indexOf('\n', node.pos);
     if (e < 0) e = code.length;
+    const line = lineNo(node.pos);
+    const col = node.pos - p + 1;
     const errLine = code.substring(p, e).replace('\t', ' ');
-    console.warn(errLine + '\n' + '^'.padStart(node.pos + 1 - p) + '\n' + msg);
+    console.warn(`${errLine}\n${'^'.padStart(col)}\n\nWARN: ${msg}\n\tat ${this._filename}:${line+1}:${col}`);
+    return;
+
+    function lineNo(index: number): number {
+      let count = 0;
+      while ((index = code.lastIndexOf('\n', index - 1)) >= 0)
+        count++;
+      return count;
+    }
   }
 
   private _extractTags(prop: any, node: ts.Node[]): string[] {
@@ -208,7 +222,7 @@ export class TypescriptToOAS {
           if (tags)
             tags.forEach((tag: any) => {
               const tagName = tag.tagName.escapedText;
-              let tagValue: any = tag.comment.trim();
+              let tagValue: any = tag.comment?.trim();
               if (['minimum', 'maximum', 'multipleOf', 'exclusiveMaximum', 'exclusiveMinimum'].includes(tagName)) {
                 if (prop.type == 'integer')
                   tagValue = parseInt(tagValue);

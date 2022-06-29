@@ -93,7 +93,7 @@ function loadFile(file: string): any {
       json = JSON.parse(fileContent);
       break;
     case '.ts':
-      json = new TypescriptToOAS().convert(file, fileContent).getOAS();
+      json = new TypescriptToOAS(file, fileContent).convert().getOAS();
       break;
     case '.js':
       json = require(path.resolve(file));
