@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.2.0
+
+* Ensuring 100% test coverage
+* NodeFormatter created to get {line,col,errorText} from a typescript node
+* Differentiate definition files from partial files
+
 ## v1.1.4
 
 * Changelog file automatic generation
