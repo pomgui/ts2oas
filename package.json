@@ -40,7 +40,7 @@
   },
   "files": [
     "bin/ts2oas.js",
-    "dist/*.js",
-    "dist/*.d.ts"
+    "dist/**/*.js",
+    "dist/**/*.d.ts"
   ]
 }
