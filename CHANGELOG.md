@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.3.0
+
+* Definition files overrides properties of partial files
+
 ## v1.2.1
 
 * Fixing tarball
