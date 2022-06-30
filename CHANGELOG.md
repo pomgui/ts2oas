@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.2.1
+
+* Fixing tarball
+
 ## v1.2.0
 
 * Ensuring 100% test coverage
