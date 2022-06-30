@@ -9,19 +9,19 @@ export class NodeFormatter {
 describe(`NodeFormatter`, ()=>{
   let fmt;
   test(`first line`, () => {
-    fmt = new NodeFormatter({ pos: 10 }, code);
+    fmt = new NodeFormatter({ pos: 8 }, code);
     expect(fmt).toMatchObject({
       line: 1,
-      col: 11,
+      col: 10,
       errorLine: `import * as ts from 'typescript';`
     });
   });
 
   test(`third line`, () => {
-    fmt = new NodeFormatter({ pos: 50 }, code);
+    fmt = new NodeFormatter({ pos: 47 }, code);
     expect(fmt).toMatchObject({
       line: 3,
-      col: 16,
+      col: 14,
       errorLine: `export class NodeFormatter {`
     });
   });

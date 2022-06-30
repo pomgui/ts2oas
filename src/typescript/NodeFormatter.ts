@@ -6,10 +6,12 @@ export class NodeFormatter {
   public errorLine: string;
 
   constructor(node: ts.Node, code: string) {
+    let pos = node.pos;
+    while (pos < code.length && ['\t', ' '].includes(code.charAt(pos))) pos++;
     let p = code.lastIndexOf('\n', node.pos) + 1, e = code.indexOf('\n', node.pos);
     if (e < 0) e = code.length;
     this.line = this._lineNo(code, node.pos);
-    this.col = node.pos - p + 1;
+    this.col = pos - p + 1;
     this.errorLine = code.substring(p, e).replace('\t', ' ');
   }
 
