@@ -81,6 +81,15 @@ const testsuites = [
         }
       },
       {
+        name: 'jsdoc tag no-valued @format',
+        code: '/** @format*/export type NewUuid=string;',
+        expected: {
+          NewUuid: {
+            type: 'string',
+          }
+        }
+      },
+      {
         name: 'Array alias',
         code: 'export type StringArray=string[];',
         expected: {
@@ -265,7 +274,96 @@ const testsuites = [
           }
         }
       },
-    ]
+      {
+        name: 'Zero required',
+        code: `/** @additionalProperties false */
+                export interface MyInterface { 
+                  /** Any description
+                   * @format int64 
+                   */
+                  id64?:integer; 
+                  /** @format email */ 
+                  email?: string;
+                };`,
+        expected: {
+          MyInterface: {
+            type: 'object',
+            properties: {
+              id64: {
+                type: 'integer',
+                description: 'Any description',
+                format: 'int64'
+              },
+              email: {
+                type: 'string',
+                format: 'email',
+              }
+            },
+            additionalProperties: false
+          }
+        }
+      },
+      {
+        name: 'Jsdoc required array',
+        code: `/** @required [id64,email] */
+                export interface MyInterface { 
+                  /** Any description
+                   * @format int64 
+                   */
+                  id64?:integer; 
+                  /** @format email */ 
+                  email?: string;
+                };`,
+        expected: {
+          MyInterface: {
+            type: 'object',
+            required: ['id64', 'email'],
+            properties: {
+              id64: {
+                type: 'integer',
+                description: 'Any description',
+                format: 'int64'
+              },
+              email: {
+                type: 'string',
+                format: 'email',
+              }
+            }
+          }
+        }
+      },
+      {
+        name: 'Jsdoc required boolean overrides code',
+        code: `export interface MyInterface { 
+                  /** Any description
+                   * @format int64 
+                   * @required true
+                   */
+                  id64?:integer; 
+                  /** 
+                   * @format email 
+                   * @required false
+                   */ 
+                  email: string;
+                };`,
+        expected: {
+          MyInterface: {
+            type: 'object',
+            required: ['id64'],
+            properties: {
+              id64: {
+                type: 'integer',
+                description: 'Any description',
+                format: 'int64'
+              },
+              email: {
+                type: 'string',
+                format: 'email',
+              }
+            }
+          }
+        }
+      },    ]
   }
 ];
 
@@ -454,9 +552,26 @@ const arrayCases = [
   },
 ];
 
+const customTypesCases = Object.entries({
+  Date: { type: 'string', format: 'date-time' },
+  Uuid: { type: 'string', format: 'uuid' },
+  uuid: { type: 'string', format: 'uuid' },
+  integer: { type: 'integer', format: 'int32' },
+  int32: { type: 'integer', format: 'int32' },
+  int4: { type: 'integer', format: 'int32' },
+  int16: { type: 'integer', format: 'int16' },
+  int2: { type: 'integer', format: 'int16' },
+  Jsonb: { type: 'object', additionalProperties: true },
+  jsonb: { type: 'object', additionalProperties: true },
+  Array: { type: 'array', items: {} },
+  Set: { type: 'array', items: {} }
+}).map(([type, expected])=>({type, expected }));
+
+
 
 module.exports = {
   testsuites,
   edgecases,
-  arrayCases
+  arrayCases,
+  customTypesCases
 }

@@ -1,9 +1,7 @@
 const config = {
     verbose: true,
     silent: true,
-    // transform: {
-    //     '^.*\\.ts$': 'ts-jest'
-    // },
+    coveragePathIgnorePatterns: ['<rootDir>/test/'],
     coverageReporters: [
         "html", // Generates ./coverage/index.html
         "json-summary", // Generates coverage-summary.json (used to alter the README.md)
