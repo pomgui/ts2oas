@@ -2,7 +2,7 @@ import { deepMerge } from '@pomgui/deep';
 import * as path from 'path';
 import * as jsyaml from 'js-yaml';
 import * as fs from 'fs';
-import { TypescriptToOAS } from './TypescriptToOAS';
+import { TypescriptToOAS } from './typescript/TypescriptToOAS';
 import { Glob } from './Glob';
 
 const pkg = require(process.cwd() + '/package.json');

@@ -3,6 +3,7 @@ import * as ts from 'typescript';
 // import * as fs from 'fs';
 // import { noCircularStringify } from "./NoCircularStringify";
 import { deepFreeze, deepMerge } from '@pomgui/deep';
+import { NodeFormatter } from "./NodeFormatter";
 
 export const TYPES: { [k: number]: string } = {
   [SyntaxKind.ArrayType]: 'array',
@@ -20,6 +21,10 @@ const PSEUDO_REFS: any = deepFreeze({
   Uuid: { type: 'string', format: 'uuid' },
   uuid: { type: 'string', format: 'uuid' },
   integer: { type: 'integer', format: 'int32' },
+  int32: { type: 'integer', format: 'int32' },
+  int4: { type: 'integer', format: 'int32' },
+  int16: { type: 'integer', format: 'int16' },
+  int2: { type: 'integer', format: 'int16' },
   Jsonb: { type: 'object', additionalProperties: true },
   jsonb: { type: 'object', additionalProperties: true },
   Array: { type: 'array', items: {} },
@@ -196,21 +201,8 @@ export class TypescriptToOAS {
   }
 
   private _printError(msg: string, node: ts.Node): void {
-    const code = this._code;
-    let p = code.lastIndexOf('\n', node.pos) + 1, e = code.indexOf('\n', node.pos);
-    if (e < 0) e = code.length;
-    const line = lineNo(node.pos);
-    const col = node.pos - p + 1;
-    const errLine = code.substring(p, e).replace('\t', ' ');
-    console.warn(`${errLine}\n${'^'.padStart(col)}\n\nWARN: ${msg}\n\tat ${this._filename}:${line+1}:${col}`);
-    return;
-
-    function lineNo(index: number): number {
-      let count = 0;
-      while ((index = code.lastIndexOf('\n', index - 1)) >= 0)
-        count++;
-      return count;
-    }
+    const fmt = new NodeFormatter(node, this._code);
+    console.warn(`${fmt.errorLine}\n${'^'.padStart(fmt.col)}\n\nWARN: ${msg}\n\tat ${this._filename}:${fmt.line + 1}:${fmt.col}`);
   }
 
   private _extractTags(prop: any, node: ts.Node[]): string[] {
