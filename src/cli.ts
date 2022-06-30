@@ -33,9 +33,9 @@ const
  */
 export function main(): void {
   processArgs();
-  const files = Array.from(inputFiles).map(f => ({ file: f, json: loadFile(f, false) }));
-  const defFiles = Array.from(definitionFiles).map(f => ({ file: f, json: loadFile(f, true) }));
-  const oas = deepMerge(template, ...files.map(f => f.json));
+  const files = Array.from(inputFiles).map(f => ({ file: f, json: loadFile(f) }));
+  const defFiles = Array.from(definitionFiles).map(f => ({ file: f, json: loadFile(f) }));
+  const oas = deepMerge(template, ...files.map(f => f.json), ...defFiles.map(f => f.json));
   saveOAS(oas);
 }
 
@@ -80,7 +80,7 @@ function saveOAS(oas: any): void {
   });
 }
 
-function loadFile(file: string, isDefinition: boolean): any {
+function loadFile(file: string): any {
   if (!file) return {};
   let json: any;
   let fileContent: string = '';
@@ -101,13 +101,6 @@ function loadFile(file: string, isDefinition: boolean): any {
       json = require(path.resolve(file));
       break;
   }
-  // Only allow header fields from definition files
-  if (!isDefinition) {
-    Object.keys(json).forEach(k => {
-      if (!['components', 'tags', 'paths'].includes(k))
-        delete json[k];
-    })
-  }
   return json;
 }
 
@@ -124,16 +117,16 @@ function usage(option: string): void {
   console.log(`
   Option '${option}' unknown.
   Usage:
-    ts2oas [-d DEF] [-o OUTPUT1 [-o OUTPUT2...]] PARTIAL1 [PARTIAL2...]
+    ts2oas [-d DEF [-d DEF2...]] [-o OUTPUT1 [-o OUTPUT2...]] PARTIAL1 [PARTIAL2...]
   Where:
-    -d DEF    Uses a start definition (DEF) file
+    -d DEF    Uses a start definition (DEF) file(s)
     -o OUTPUT Defines the outputs of the final OAS3 spec (default ./spec.oas3.json)
               It can be defined various files, the extension determines the file type:
               .yaml or .yml for Yaml files, otherwise it always will save JSON files.
     PARTIALn  OAS3 partial spec files (they need at leaast one root key, e.g. "paths")
               Every PARTIAL is a glob pattern (E.g. ./oas/**/*.ts)
-              WARN: All fields will be ignored from these file except tags,paths,components 
-              (so they can be edited with OAS editors with intellisense)
+              WARN: The DEF file(s) properties take precedence and will override 
+              all the partial files properties.
   About the files:
     - DEF, OUTPUT, and PARTIALn files may have *.json, *.yaml, or *.yml file format.
     - DEF, PARTIALn files may be node *.js files (a OAS3 object needs to be exported).
