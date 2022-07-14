@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.3.1
+
+* Support for minItems, maxItems, minLength, and maxLength
+* NodeFormatter skip the spaces at the node.pos
+
 ## v1.3.0
 
 * Definition files overrides properties of partial files
