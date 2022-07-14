@@ -207,6 +207,10 @@ const testsuites = [
                */
               age?: integer;
               /**
+               * @minLength 10
+               */
+              name?: string;
+              /**
                * @exclusiveMinimum 500.50
                */
               expenses?: number;
@@ -229,6 +233,10 @@ const testsuites = [
                 format: 'int32',
                 minimum: 10,
                 maximum: 50
+              },
+              name: {
+                type: 'string',
+                minLength: 10
               },
               expenses: {
                 type: 'number',

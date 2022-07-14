@@ -202,7 +202,7 @@ export class TypescriptToOAS {
 
   private _printError(msg: string, node: ts.Node): void {
     const fmt = new NodeFormatter(node, this._code);
-    console.warn(`${fmt.errorLine}\n${'^'.padStart(fmt.col)}\n\nWARN: ${msg}\n\tat ${this._filename}:${fmt.line + 1}:${fmt.col}`);
+    console.warn(`${fmt.errorLine}\n${'^'.padStart(fmt.col)}\nWARN: ${msg}\n\tat ${this._filename}:${fmt.line + 1}:${fmt.col}`);
   }
 
   private _extractTags(prop: any, node: ts.Node[]): string[] {
@@ -220,6 +220,9 @@ export class TypescriptToOAS {
                   tagValue = parseInt(tagValue);
                 else if (prop.type == 'number')
                   tagValue = parseFloat(tagValue);
+              }
+              else if (['minItems', 'maxItems', 'minLength', 'maxLength', 'minProperties', 'maxProperties'].includes(tagName)) {
+                tagValue = parseInt(tagValue);
               }
               else if ('additionalProperties' === tagName) {
                 tagValue = tagValue === 'true';
