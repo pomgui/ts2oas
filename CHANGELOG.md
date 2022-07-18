@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.3.3
+
+* fix(verbose)
+
 ## v1.3.2
 
 * Adding verbose option
