@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.3.2
+
+* Adding verbose option
+
 ## v1.3.1
 
 * Support for minItems, maxItems, minLength, and maxLength
