@@ -8,6 +8,7 @@ import { Glob } from './Glob';
 const pkg = require(process.cwd() + '/package.json');
 
 let
+  verbose = false,
   outputFiles: string[] = [],
   definitionFiles = new Set<string>(),
   inputFiles = new Set<string>();
@@ -35,6 +36,8 @@ export function main(): void {
   processArgs();
   const files = Array.from(inputFiles).map(f => ({ file: f, json: loadFile(f) }));
   const defFiles = Array.from(definitionFiles).map(f => ({ file: f, json: loadFile(f) }));
+  if (verbose)
+    console.log(`Merging files...`);
   const oas = deepMerge(template, ...files.map(f => f.json), ...defFiles.map(f => f.json));
   saveOAS(oas);
 }
@@ -45,6 +48,7 @@ function processArgs(): void {
   for (let i = 2; i < argv.length;) {
     const opt = argv[i];
     switch (opt) {
+      case '-v': verbose: true; break;
       case '-d': definitionFiles.add(argv[++i]); i++; break;
       case '-o': outputFiles.push(argv[++i]); i++; break;
       default:
@@ -72,6 +76,8 @@ function removeOutputFromInput() {
 function saveOAS(oas: any): void {
   let file: string;
   outputFiles.forEach(outputFile => {
+    if (verbose)
+      console.log(`Saving output into '${outputFile}'...`);
     if (isYaml(outputFile))
       file = jsyaml.dump(oas);
     else
@@ -82,6 +88,8 @@ function saveOAS(oas: any): void {
 
 function loadFile(file: string): any {
   if (!file) return {};
+  if (verbose)
+    console.log(`Loading '${file}'...`);
   let json: any;
   let fileContent: string = '';
   const ext = path.extname(file);
@@ -117,8 +125,9 @@ function usage(option: string): void {
   console.log(`
   Option '${option}' unknown.
   Usage:
-    ts2oas [-d DEF [-d DEF2...]] [-o OUTPUT1 [-o OUTPUT2...]] PARTIAL1 [PARTIAL2...]
+    ts2oas [-v] [-d DEF [-d DEF2...]] [-o OUTPUT1 [-o OUTPUT2...]] PARTIAL1 [PARTIAL2...]
   Where:
+    -v        Verbose
     -d DEF    Uses a start definition (DEF) file(s)
     -o OUTPUT Defines the outputs of the final OAS3 spec (default ./spec.oas3.json)
               It can be defined various files, the extension determines the file type:
