@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v1.3.4
+
+* fix(verbose): :-(
+
 ## v1.3.3
 
 * fix(verbose)
