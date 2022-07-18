@@ -48,7 +48,7 @@ function processArgs(): void {
   for (let i = 2; i < argv.length;) {
     const opt = argv[i];
     switch (opt) {
-      case '-v': verbose: true; i++; break;
+      case '-v': verbose = true; i++; break;
       case '-d': definitionFiles.add(argv[++i]); i++; break;
       case '-o': outputFiles.push(argv[++i]); i++; break;
       default:
